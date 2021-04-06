@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/proxies.json",
+  "proxies": {
+    "Index": {
+      "matchCondition": {
+        "route": "/",
+        "methods": [ "GET" ]
+      },
+      "backendUri": "https://localhost/api/timeline"
+    }
+  }
+}
