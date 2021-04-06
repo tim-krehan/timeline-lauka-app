@@ -15,9 +15,9 @@ namespace timeline_lauka_app
     {
         [FunctionName("timeline")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "timeline")] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "timeline")] HttpRequest req, ExecutionContext context)
         {
-            string content = File.ReadAllText("./static/index.html");
+            string content = await System.IO.File.ReadAllTextAsync(Path.Combine(context.FunctionDirectory, "../static/index.html"), System.Text.Encoding.UTF8);
 
             TableDatabase db = new TableDatabase(Environment.GetEnvironmentVariable("AzureWebJobsStorage"), "timeline");
             IEnumerable allitems = db.GetAllItems();
