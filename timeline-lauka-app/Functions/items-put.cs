@@ -12,15 +12,15 @@ namespace timeline_lauka_app
 {
     public static class ItemsPut
     {
-        //[FunctionName("items-put")]
-        //public static async Task<IActionResult> Run(
-        //    [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "items/{itemid}")] HttpRequest req, string itemid)
-        //{
-        //    string apikey = req.Headers["x-api-key"];
-        //    if (string.IsNullOrEmpty(apikey))
-        //        return new UnauthorizedResult();
-        //    if (apikey != Environment.GetEnvironmentVariable("APP_USER_APIKEY"))
-        //        return new UnauthorizedResult();
+        [FunctionName("items-put")]
+        public static async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "items/{itemid}")] HttpRequest req, string itemid)
+        {
+            string apikey = req.Headers["x-api-key"];
+            if (string.IsNullOrEmpty(apikey))
+                return new UnauthorizedResult();
+            if (apikey != Environment.GetEnvironmentVariable("APP_USER_APIKEY"))
+                return new UnauthorizedResult();
         //
         //    StreamReader sr = new StreamReader(req.Body);
         //    string requestbody = sr.ReadToEnd();
@@ -103,8 +103,8 @@ namespace timeline_lauka_app
         //        logger.Log(dnsname.FullDomain, requestv6.ToString());
         //    }
         //
-        //    return new OkResult();
-        //}
+            return new ContentResult { Content = null, StatusCode = 418 };
+        }
     }
 }
 
