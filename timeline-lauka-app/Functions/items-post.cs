@@ -10,11 +10,11 @@ using Newtonsoft.Json;
 
 namespace timeline_lauka_app
 {
-    public static class ItemPost
+    public static class ItemsPost
     {
-        [FunctionName("item-post")]
+        [FunctionName("items-post")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "item")] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "items")] HttpRequest req)
         {
             string apikey = req.Headers["x-api-key"];
             if (string.IsNullOrEmpty(apikey))
@@ -41,7 +41,7 @@ namespace timeline_lauka_app
 
             await db.AddItemAsync(requesteditem);
 
-            return new ContentResult { Content = JsonConvert.SerializeObject(requesteditem), ContentType = "application/json", StatusCode = 200 };
+            return new CreatedResult($"{(req.IsHttps ? "https://" : "http://")}{req.Headers["Host"]}/api/items/{newguid}", null);
         }
     }
 }
