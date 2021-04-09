@@ -28,7 +28,7 @@ namespace timeline_lauka_app
             if (item != null)
             {
                 await db.DeleteItemAsync(item);
-                return new EmptyResult();
+                return new NoContentResult();
             }
             else
             {

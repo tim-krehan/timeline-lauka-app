@@ -48,5 +48,11 @@ namespace timeline_lauka_app
             TableOperation op = TableOperation.Insert(item);
             await _table.ExecuteAsync(op);
         }
+
+        public async Task ReplaceItemAsync(TimelineItem item)
+        {
+            TableOperation op = TableOperation.Replace(item);
+            await _table.ExecuteAsync(op);
+        }
     }
 }

@@ -41,7 +41,8 @@ namespace timeline_lauka_app
 
             await db.AddItemAsync(requesteditem);
 
-            return new CreatedResult($"{(req.IsHttps ? "https://" : "http://")}{req.Headers["Host"]}/api/items/{newguid}", null);
+            return new ContentResult { Content = null, StatusCode = 201 };
+            //return new CreatedResult($"{(req.IsHttps ? "https://" : "http://")}{req.Headers["Host"]}/api/items/{newguid}", null);
         }
     }
 }

@@ -21,89 +21,41 @@ namespace timeline_lauka_app
                 return new UnauthorizedResult();
             if (apikey != Environment.GetEnvironmentVariable("APP_USER_APIKEY"))
                 return new UnauthorizedResult();
-        //
-        //    StreamReader sr = new StreamReader(req.Body);
-        //    string requestbody = sr.ReadToEnd();
-        //
-        //    DynDnsRESTRequestBody request;
-        //
-        //    try
-        //    {
-        //        request = JsonConvert.DeserializeObject<DynDnsRESTRequestBody>(requestbody);
-        //    }
-        //    catch
-        //    {
-        //        return new BadRequestResult();
-        //    }
-        //
-        //    if (string.IsNullOrWhiteSpace(domainname))
-        //    {
-        //        return new BadRequestResult();
-        //    }
-        //
-        //    TableDatabase db = new TableDatabase(Environment.GetEnvironmentVariable("AzureWebJobsStorage"), "domains");
-        //    Logger logger = new Logger(db.GetTable("logging"));
-        //    Domain domainentry = db.GetDomainByKey(apikey);
-        //
-        //    if (domainentry.DomainName != domainname)
-        //    {
-        //        return new BadRequestResult();
-        //    }
-        //
-        //
-        //    IPAddress requestv4;
-        //    IPAddress requestv6;
-        //
-        //    bool ipv4valid = IPAddress.TryParse(request.IPv4, out requestv4);
-        //    bool ipv6valid = IPAddress.TryParse(request.IPv6, out requestv6);
-        //
-        //    if (!ipv4valid && !ipv6valid)
-        //    {
-        //        return new BadRequestResult();
-        //    }
-        //
-        //    if (!string.IsNullOrEmpty(request.IPv4) && !ipv4valid)
-        //        return new BadRequestResult();
-        //    if (!string.IsNullOrEmpty(request.IPv6) && !ipv6valid)
-        //        return new BadRequestResult();
-        //    if (requestv4.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
-        //        return new BadRequestResult();
-        //    if (requestv6.AddressFamily != System.Net.Sockets.AddressFamily.InterNetworkV6)
-        //        return new BadRequestResult();
-        //
-        //    FQDN dnsname;
-        //    try
-        //    {
-        //        dnsname = new FQDN(domainentry.DomainName);
-        //    }
-        //    catch (ArgumentException)
-        //    {
-        //        return new BadRequestResult();
-        //    }
-        //
-        //    DNSManager dnsmanager = new DNSManager();
-        //    dnsmanager.TenantID = Environment.GetEnvironmentVariable("APP_SECRET_TENANTID");
-        //    dnsmanager.ClientID = Environment.GetEnvironmentVariable("APP_SECRET_CLIENTID");
-        //    dnsmanager.SubscriptionID = Environment.GetEnvironmentVariable("APP_SECRET_SUBSCRIPTIONID");
-        //    dnsmanager.Secret = Environment.GetEnvironmentVariable("APP_SECRET_SECRET");
-        //    dnsmanager.ResourceGroup = Environment.GetEnvironmentVariable("APP_SECRET_RESOURCEGROUP");
-        //
-        //    await dnsmanager.LoginAsync();
-        //    if (requestv4 != null)
-        //    {
-        //        await dnsmanager.UpdateIPRecordAsync(dnsname, requestv4);
-        //
-        //        logger.Log(dnsname.FullDomain, requestv4.ToString());
-        //    }
-        //
-        //    if (requestv6 != null)
-        //    {
-        //        await dnsmanager.UpdateIPRecordAsync(dnsname, requestv6);
-        //
-        //        logger.Log(dnsname.FullDomain, requestv6.ToString());
-        //    }
-        //
-            return new ContentResult { Content = null, StatusCode = 418 };
+
+
+            StreamReader sr = new StreamReader(req.Body);
+            string requestbody = sr.ReadToEnd();
+        
+            TimelineItem requesteditem;
+        
+            try
+            {
+                requesteditem = JsonConvert.DeserializeObject<TimelineItem>(requestbody);
+            }
+            catch
+            {
+                return new BadRequestResult();
+            }
+
+            requesteditem.RowKey = itemid;
+            requesteditem.PartitionKey = itemid;
+
+            TableDatabase db = new TableDatabase(Environment.GetEnvironmentVariable("AzureWebJobsStorage"), "timeline");
+            TimelineItem existingitem = db.GetItemByKey(itemid);
+
+            var test = 22;
+        
+            if (existingitem == null)
+            {
+                await db.AddItemAsync(requesteditem);
+                return new ContentResult { Content = null, StatusCode = 201 };
+            }
+            else
+            {
+                requesteditem.ETag = existingitem.ETag;
+                await db.ReplaceItemAsync(requesteditem);
+                return new NoContentResult();
+            }
         }
     }
 }
